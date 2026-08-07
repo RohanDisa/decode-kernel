@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61", "wheel", "torch"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "decode-kernel"
+version = "0.1.0"
+description = "W4A16 fused-dequant GEMV kernels for LLM decode"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.9"
+dependencies = ["torch", "numpy", "matplotlib"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+bench = ["pytest"]
+modal = ["modal"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["python"]
