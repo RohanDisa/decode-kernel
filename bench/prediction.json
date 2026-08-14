@@ -1,0 +1,32 @@
+{
+  "written_before_measurement": true,
+  "date": "2026-09-10",
+  "claim": "Decode GEMV is bandwidth-bound. 4-bit weights move 4x fewer bytes than fp16, so wall-clock speedup vs fp16 GEMV should approach 4x, minus dequantization overhead.",
+  "arithmetic_intensity": {
+    "fp16_gemv_flop_per_byte": 1.0,
+    "w4_gemv_flop_per_byte": 4.0,
+    "note": "Each weight is read once and used in one multiply-add (2 FLOPs). fp16 is 2 bytes; 4-bit is 0.5 bytes."
+  },
+  "ridge_point_estimate": {
+    "T4": {
+      "peak_fp16_tflops": 65.0,
+      "achievable_hbm_gbs_estimate": 250.0,
+      "ridge_flop_per_byte": 260.0
+    },
+    "A100_40GB": {
+      "peak_fp16_tflops": 312.0,
+      "achievable_hbm_gbs_estimate": 1350.0,
+      "ridge_flop_per_byte": 231.0
+    }
+  },
+  "distance_from_ridge": "W4 GEMV at batch 1 sits at 4 FLOP/byte, 60x to 65x below the ridge on T4 and A100. Decode is not close to compute-bound.",
+  "predicted_speedup_vs_cublas_fp16": 4.0,
+  "predicted_residual": "Missing factor vs 4x attributed to dequant instruction overhead (nibble extract, sign-extend, scale fma) plus imperfect HBM saturation. Expect measured ~3.0x to 3.4x.",
+  "predicted_hbm_pct_of_achievable_v5": 0.84,
+  "predicted_sm_pct_v5_batch1": 0.12,
+  "predicted_crossover_batch": {
+    "low": 32,
+    "high": 64,
+    "meaning": "Batch size where SM throughput % crosses DRAM throughput %. That is where decode stops being memory-bound."
+  }
+}

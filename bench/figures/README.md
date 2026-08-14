@@ -1,0 +1,1 @@
+Plots from `python -m bench.plot`. Per-GPU names: `roofline_{T4,A100}.png`, `stage_bars_*.png`, `batch_sweep_*.png`, `batch_latency_*.png`. Untagged `roofline.png` / `stage_bars.png` are copies of the T4 files.
