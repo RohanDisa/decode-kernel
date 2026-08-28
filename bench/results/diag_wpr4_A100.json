@@ -1,0 +1,161 @@
+{
+  "meta": {
+    "gpu": {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "capability": "8.0",
+      "total_memory_bytes": 42405855232,
+      "multi_processor_count": 108,
+      "l2_cache_bytes": 41943040,
+      "clocks_locked": false,
+      "nvidia_smi": {
+        "raw": "NVIDIA A100-SXM4-40GB, 40960 MiB, 210 MHz, 1215 MHz, 0x0000000000000001"
+      }
+    },
+    "host": "modal",
+    "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.35",
+    "torch": "2.5.1+cu124",
+    "cuda": "12.4",
+    "timestamp": "2026-09-10T09:41:43.943543+00:00",
+    "git": null,
+    "gpu_type": "A100",
+    "nvcc_arch": "sm_80",
+    "runner": "modal",
+    "driver_version": "NVIDIA A100-SXM4-40GB, 580.95.05, 40960 MiB, 8.0",
+    "nvidia_smi": "Thu Sep 10 09:40:24 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:00:09.0 Off |                    0 |\n| N/A   41C    P0             63W /  400W |       4MiB /  40960MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+    "nvcc_compile": "nvcc -O3 -arch=sm_80 -ccbin g++ -std=c++17 --use_fast_math -lineinfo -Xcompiler -fPIC -I /root/decode-kernel/include -c /root/src/gemv_w4a16.cu -o /tmp/gemv_w4a16.o"
+  },
+  "prediction": {
+    "written_before_measurement": true,
+    "date": "2026-09-10",
+    "claim": "Decode GEMV is bandwidth-bound. 4-bit weights move 4x fewer bytes than fp16, so wall-clock speedup vs fp16 GEMV should approach 4x, minus dequantization overhead.",
+    "arithmetic_intensity": {
+      "fp16_gemv_flop_per_byte": 1.0,
+      "w4_gemv_flop_per_byte": 4.0,
+      "note": "Each weight is read once and used in one multiply-add (2 FLOPs). fp16 is 2 bytes; 4-bit is 0.5 bytes."
+    },
+    "ridge_point_estimate": {
+      "T4": {
+        "peak_fp16_tflops": 65.0,
+        "achievable_hbm_gbs_estimate": 250.0,
+        "ridge_flop_per_byte": 260.0
+      },
+      "A100_40GB": {
+        "peak_fp16_tflops": 312.0,
+        "achievable_hbm_gbs_estimate": 1350.0,
+        "ridge_flop_per_byte": 231.0
+      }
+    },
+    "distance_from_ridge": "W4 GEMV at batch 1 sits at 4 FLOP/byte, 60x to 65x below the ridge on T4 and A100. Decode is not close to compute-bound.",
+    "predicted_speedup_vs_cublas_fp16": 4.0,
+    "predicted_residual": "Missing factor vs 4x attributed to dequant instruction overhead (nibble extract, sign-extend, scale fma) plus imperfect HBM saturation. Expect measured ~3.0x to 3.4x.",
+    "predicted_hbm_pct_of_achievable_v5": 0.84,
+    "predicted_sm_pct_v5_batch1": 0.12,
+    "predicted_crossover_batch": {
+      "low": 32,
+      "high": 64,
+      "meaning": "Batch size where SM throughput % crosses DRAM throughput %. That is where decode stops being memory-bound."
+    }
+  },
+  "cases": [
+    {
+      "M": 4096,
+      "K": 4096,
+      "batch": 1,
+      "kernels": [
+        {
+          "impl": "v1_wpr4",
+          "version": 1,
+          "reuse_weights": false,
+          "split_k": 1,
+          "warps_per_row": 4,
+          "kernel_stamp": 14,
+          "launched_version": 14,
+          "stamp_after_touch": 14,
+          "precision": "w4a16",
+          "gbps": 241.82856496957206,
+          "tflops": 0.9362285464228421,
+          "bytes_moved": 8667136,
+          "ai_flop_per_byte": 3.8714555765595464,
+          "median_us": 35.840000957250595,
+          "iqr_us": 1.024000346660614,
+          "q1_us": 34.81600061058998,
+          "q3_us": 35.840000957250595,
+          "mean_us": 35.620864789932966,
+          "stdev_us": 4.096793923413476,
+          "min_us": 34.81600061058998,
+          "max_us": 144.3839967250824,
+          "warmup": 50,
+          "iters": 1000,
+          "l2_flushed": true,
+          "hbm_pct_of_copy": 17.52755310927987,
+          "hbm_pct_of_read": 17.204676025222355,
+          "hbm_pct": 17.204676025222355
+        },
+        {
+          "impl": "pytorch_linear_fp16",
+          "precision": "fp16",
+          "cross_precision_vs_w4": true,
+          "gbps": 697.5318947206192,
+          "tflops": 0.6971914691985496,
+          "bytes_moved": 33570816,
+          "median_us": 48.128001391887665,
+          "iqr_us": 1.024000346660614,
+          "q1_us": 48.128001391887665,
+          "q3_us": 49.15200173854828,
+          "mean_us": 50.82009722292423,
+          "stdev_us": 9.448771087248016,
+          "min_us": 47.10400104522705,
+          "max_us": 249.85599517822266,
+          "warmup": 50,
+          "iters": 1000,
+          "l2_flushed": true,
+          "hbm_pct_of_copy": 50.55658884495551,
+          "hbm_pct_of_read": 49.62528007159847,
+          "hbm_pct": 49.62528007159847
+        },
+        {
+          "impl": "cublas_fp16_gemv",
+          "precision": "fp16",
+          "cross_precision_vs_w4": true,
+          "gbps": 682.9999758417068,
+          "tflops": 0.6826666425201637,
+          "bytes_moved": 33570816,
+          "median_us": 49.15200173854828,
+          "iqr_us": 1.024000346660614,
+          "q1_us": 48.128001391887665,
+          "q3_us": 49.15200173854828,
+          "mean_us": 50.52006521821022,
+          "stdev_us": 6.28765195241134,
+          "min_us": 47.10400104522705,
+          "max_us": 121.85599654912949,
+          "warmup": 50,
+          "iters": 1000,
+          "l2_flushed": true,
+          "hbm_pct_of_copy": 49.50332625804014,
+          "hbm_pct_of_read": 48.591419756676785,
+          "hbm_pct": 48.591419756676785
+        },
+        {
+          "impl": "marlin",
+          "precision": "w4a16",
+          "skipped": true,
+          "note": "Marlin not installed. pip install from IST-DASLab/marlin to enable."
+        }
+      ]
+    }
+  ],
+  "methodology": {
+    "warmup": 50,
+    "iters": 1000,
+    "timer": "cuda_events",
+    "l2_flush_bytes": 67108864,
+    "statistic": "median_and_iqr",
+    "clocks_locked": false,
+    "warps_per_row": 4,
+    "kernel_stamp": "last_kernel_stamp after launch"
+  },
+  "ceiling_denominator": "read",
+  "ceiling_kind": "stream_read_sum",
+  "hbm_read_gbps": 1405.5979003327188,
+  "hbm_copy_gbps": 1379.7052187594697
+}

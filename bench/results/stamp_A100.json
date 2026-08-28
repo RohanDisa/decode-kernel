@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "gpu": {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "capability": "8.0",
+      "total_memory_bytes": 42405855232,
+      "multi_processor_count": 108,
+      "l2_cache_bytes": 41943040,
+      "clocks_locked": false,
+      "nvidia_smi": {
+        "raw": "NVIDIA A100-SXM4-40GB, 40960 MiB, 1095 MHz, 1215 MHz, 0x0000000000000000"
+      }
+    },
+    "host": "modal",
+    "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.35",
+    "torch": "2.5.1+cu124",
+    "cuda": "12.4",
+    "timestamp": "2026-09-10T09:41:23.618973+00:00",
+    "git": null,
+    "gpu_type": "A100",
+    "nvcc_arch": "sm_80",
+    "runner": "modal",
+    "driver_version": "NVIDIA A100-SXM4-40GB, 580.95.05, 40960 MiB, 8.0",
+    "nvidia_smi": "Thu Sep 10 09:40:24 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:00:09.0 Off |                    0 |\n| N/A   41C    P0             63W /  400W |       4MiB /  40960MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+    "nvcc_compile": "nvcc -O3 -arch=sm_80 -ccbin g++ -std=c++17 --use_fast_math -lineinfo -Xcompiler -fPIC -I /root/decode-kernel/include -c /root/src/gemv_w4a16.cu -o /tmp/gemv_w4a16.o"
+  },
+  "stamps": {
+    "v0": 0,
+    "v1": 1,
+    "v2": 2,
+    "v3": 3,
+    "v4": 4,
+    "v5": 5,
+    "v5_reuse": 15,
+    "v1_wpr2": 12,
+    "v1_wpr4": 14
+  },
+  "expected": {
+    "v0": 0,
+    "v1": 1,
+    "v2": 2,
+    "v3": 3,
+    "v4": 4,
+    "v5": 5,
+    "v5_reuse": 15,
+    "v1_wpr2": 12,
+    "v1_wpr4": 14
+  },
+  "mismatches": {},
+  "distinct_v0_v5": true,
+  "dispatch_ok": true,
+  "note": "Identical v2/v3/v5 *latencies* are not a dispatch bug if stamps are 2, 3, 5: those kernels share dequant_dot32 on int4 loads."
+}
