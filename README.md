@@ -182,16 +182,3 @@ pip install -e .
 Shapes from real models: 4096×4096, 4096×11008, 4096×14336 (Llama 7B/8B attention and MLP projections).
 
 ---
-
-## Layout
-
-```
-csrc/gemv_w4a16.cu     v0–v5 + weight-reuse path
-python/decode_kernel/  quantize, reference, bindings
-bench/                 ceilings, harness, ncu, plots, prediction.json
-tests/                 packing + kernel correctness
-```
-
-Out of scope: training, tensor cores, activation quantization, multi-GPU, end-to-end model integration. Two half-measured kernels are worth less than one fully measured one.
-
-License: MIT.
